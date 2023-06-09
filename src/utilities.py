@@ -13,6 +13,7 @@ from sklearn.metrics import auc
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import StratifiedKFold
 
 # models
 from sklearn.linear_model import LogisticRegression
@@ -84,8 +85,9 @@ def test_model(X_hd_train, X_hd_test, y_hd_train):
     pipe = Pipeline([('scaler', StandardScaler()), ('clf', LogisticRegression(max_iter=1000))])
     pipe.fit(X_hd_train, y_hd_train)
     y_hd_pred = pipe.predict(X_hd_test)
+    y_hd_prob = pipe.predict_proba(X_hd_test)
 
-    return y_hd_pred, pipe
+    return y_hd_pred, y_hd_prob, pipe
 
 
 # nested cross validation
@@ -96,6 +98,7 @@ def nested_crossvalidation(X, y):
     ----------
     X: dataframe
     y:
+
     Return
     ------
      cm_nested: 
@@ -109,8 +112,8 @@ def nested_crossvalidation(X, y):
     pipe = Pipeline(steps=[("scaler", scaler), ("model", model)])
 
     # configure nested cross-validation layers
-    cv_outer = KFold(n_splits=10, shuffle=True, random_state=123)
-    cv_inner = KFold(n_splits=5, shuffle=True, random_state=123)
+    cv_outer = StratifiedKFold(n_splits=10, shuffle=True, random_state=123)
+    cv_inner = StratifiedKFold(n_splits=5, shuffle=True, random_state=123)
 
     # create confusion matrix list to save each of external cv layer
     cm_nested = []
@@ -118,7 +121,7 @@ def nested_crossvalidation(X, y):
     y_test_nested = []
     outer_results = list()
 
-    for train_ix, test_ix in cv_outer.split(X):
+    for train_ix, test_ix in cv_outer.split(X, y):
     # split data
         X_train, X_test = X.iloc[train_ix, :], X.iloc[test_ix, :]
         y_train, y_test = y[train_ix], y[test_ix]
@@ -156,7 +159,7 @@ def nested_crossvalidation(X, y):
     
     #print('Accuracy: %.3f (%.3f)' % (np.mean(outer_results), np.std(outer_results)))
     print(f'Mean accuracy: {np.mean(outer_results):.2f} ({np.std(outer_results):.2f})')    
-    return cm_nested, y_pred_nested, y_test_nested
+    return cm_nested, y_pred_nested, y_test_nested, outer_results
 
 
 def nested_ROC_plot(y_test_nested, y_pred_nested, ax=None):
