@@ -11,7 +11,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.metrics import RocCurveDisplay
 from sklearn.metrics import auc
 from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import StratifiedKFold
 
@@ -21,7 +20,6 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.tree import ExtraTreeClassifier
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 
