@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from matplotlib.ticker import FormatStrFormatter
 import seaborn as sn
+from tqdm import tqdm
 
 # preprocessing
 from sklearn.model_selection import StratifiedShuffleSplit
@@ -13,6 +14,7 @@ from sklearn.metrics import auc
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import ShuffleSplit
 
 # models
 from sklearn.linear_model import LogisticRegression
@@ -78,9 +80,36 @@ def dataplotmelt(grid_result):
     
     return data_plot
 
+
+def model_optimization(X,y):
+    
+    scaler = StandardScaler()
+    model = LogisticRegression(penalty='l2', max_iter=10000)
+
+    pipe = Pipeline(steps=[("scaler", scaler), ("model", model)])
+
+
+    param_grid = {'model__C': [100, 10, 1.0, 0.1, 0.01], 'model__solver': ["newton-cg", 'lbfgs', 'liblinear'], 'model__penalty':['l2']}
+    
+    cv_grid = StratifiedKFold(n_splits=10, shuffle=True, random_state=123)
+
+    # define search
+    search = GridSearchCV(pipe, param_grid, scoring='accuracy', cv=cv_grid, refit=True)
+
+    # execute search
+    result = search.fit(X, y)
+        
+    # get the best performing model fit on the whole training set
+    best_model = result.best_estimator_
+
+    print(f'Best model parameters{result.best_params_}')
+
+    return best_model
+
+
 # Test model
-def test_model(X_hd_train, X_hd_test, y_hd_train):
-    pipe = Pipeline([('scaler', StandardScaler()), ('clf', LogisticRegression(max_iter=1000))])
+def test_model(X_hd_train, X_hd_test, y_hd_train, best_model):
+    pipe = Pipeline([('scaler', StandardScaler()), ('clf', best_model)])
     pipe.fit(X_hd_train, y_hd_train)
     y_hd_pred = pipe.predict(X_hd_test)
     y_hd_prob = pipe.predict_proba(X_hd_test)
@@ -246,3 +275,62 @@ def nested_ROC_plot(y_test_nested, y_pred_nested, ax=None):
     print(f"Mean AUC = {mean_auc:.3f} ({std_auc:.3f})")
     return viz
 
+
+def montecarlo_crossvalidation(X,y, best_model, binary=True):
+
+    accuracies_mc = []
+    SPLITS = 100
+    sensitivty_total = []
+    specificity_total = []
+
+    cv = ShuffleSplit(n_splits=SPLITS, test_size=0.2, random_state=7)
+    scaler = StandardScaler()
+    #model = LogisticRegression(penalty='l2', max_iter=10000)
+
+    pipe = Pipeline(steps=[("scaler", scaler), ("model", best_model)])
+
+    for train_ix, test_ix in tqdm(cv.split(X, y),total=cv.get_n_splits(), desc="shuffle split"):
+        X_train, X_test = X.iloc[train_ix, :], X.iloc[test_ix, :]
+        y_train, y_test = y.iloc[train_ix], y.iloc[test_ix]
+
+        pipe.fit(X_train, y_train)
+        y_pred = pipe.predict(X_test)
+        accuracy_montecarlo = accuracy_score(y_test, y_pred)
+        if binary == True:
+            tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+            sensitivty = tp/(tp+fn)
+            sensitivty_total.append(sensitivty)
+            specificity = tn/(tn+fp)
+            specificity_total.append(specificity)
+            accuracies_mc.append(accuracy_montecarlo)
+        else:
+            accuracies_mc.append(accuracy_montecarlo)
+    
+    print(f'Model perfomance using monte carlo cross-validation\nMean accuracy = {np.mean(accuracies_mc):.2f} ± {np.std(accuracies_mc):.2f}')
+                  
+    
+    return accuracies_mc, sensitivty_total, specificity_total
+
+
+def variable_importance_df(wavenumbers, pipeline_best):
+    """Function returns a dataframe with the 10 highest coefficients (positive and negative)
+    Paramaters:
+    -----------
+    wvenumbers: array
+    coefficients: pipeline
+
+    Return
+    --------
+    final_sort: dataframe
+    """
+
+    variable_importance = pd.DataFrame({"Wavenumbers": wavenumbers,
+    'Coefficients': pipeline_best['model'].coef_[0].T})
+
+
+    variable_importance_sort_positive = variable_importance.sort_values(by=["Coefficients"], ascending=False).head(10)
+    variable_importance_sort_negative = variable_importance.sort_values(by=["Coefficients"], ascending=True).head(10)
+
+    final_sortlist = [variable_importance_sort_positive,variable_importance_sort_negative]
+    final_sort = pd.concat(final_sortlist)
+    return final_sort
