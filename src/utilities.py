@@ -334,3 +334,38 @@ def variable_importance_df(wavenumbers, pipeline_best):
     final_sortlist = [variable_importance_sort_positive,variable_importance_sort_negative]
     final_sort = pd.concat(final_sortlist)
     return final_sort
+
+
+def gridsearch_bias(X_thorax_part1, y_thorax):
+    clf1 = LogisticRegression(max_iter=1000, random_state=123)
+    clf2 = SVC(random_state=123)
+    clf3 = RandomForestClassifier(random_state=123)
+
+    param1 = {}
+    param1['clf__kernel'] = ['rbf','linear']
+    param1['clf'] = [clf2]
+
+    param2 ={}
+    param2['clf'] = [clf1]
+
+    param3 = {}
+    param3['clf'] = [clf3]
+
+    pipe = Pipeline([('scaler', StandardScaler()), ('clf', clf1)])
+    params = [param1, param2, param3]
+    cv = StratifiedShuffleSplit(n_splits=10, random_state=7, test_size=0.2)
+
+    grid = GridSearchCV(pipe, params, cv=cv, scoring='accuracy')
+
+    results_part1 = grid.fit(X_thorax_part1,y_thorax)
+
+    dx = pd.DataFrame.from_dict(results_part1.cv_results_)
+    mean_accuracies = dx[["param_clf","param_clf__kernel","mean_test_score"]]
+    mean_accuracies_copy = mean_accuracies.copy()
+
+    mean_accuracies_copy['param_clf'] =  mean_accuracies_copy['param_clf'].astype(str)
+    mean_accuracies_copy['param_clf'] =  mean_accuracies_copy['param_clf'].str.replace('LogisticRegression(max_iter=1000, random_state=123)',repl='LR', regex=False)
+    mean_accuracies_copy['param_clf'] =  mean_accuracies_copy['param_clf'].str.replace("SVC(kernel='linear', random_state=123)", 'SVM',regex=False)
+    mean_accuracies_copy['param_clf'] =  mean_accuracies_copy['param_clf'].str.replace('RandomForestClassifier(random_state=123)', 'RF', regex=False)
+
+    return mean_accuracies_copy
