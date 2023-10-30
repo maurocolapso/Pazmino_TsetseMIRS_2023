@@ -32,13 +32,14 @@ def baseline_accuracy(X, y):
     X : array-like of shape (n_samples, n_features)
         The data to fit. Can be for example a list, or an array.
 
-    y : array-like of shape (n_samples,)The target variable to try to predict in the case of
+    y : array-like of shape (n_samples,). 
+        The target variable to try to predict in the case of
         supervised learning.
     
     Returns
     -------
     cv_results: dict of numpy (masked) ndarrays
-    A dict with keys as column headers and values as columns, that can be imported into a pandas DataFrame.
+                    A dict with keys as column headers and values as columns, that can be imported into a pandas DataFrame.
     '''
     seed=123
 
@@ -60,12 +61,16 @@ def baseline_accuracy(X, y):
     return grid_search.cv_results_
 
 def dataplotmelt(grid_result):
-    """ Crate a dataframe with results from a gridsearch
-    Parameters:
+    """ 
+    Creates a dataframe with results from a gridsearch
     
+    Parameters:
+    -----------
     grid_results: dict of numpy (masked) ndarrays
-    A dict with keys as column headers and values as columns, that can be imported into a pandas DataFrame.
+        A dict with keys as column headers and values as columns, that can be imported into a pandas DataFrame.
 
+    Returns:
+    -----------
     data_plot: dataframe
     """
 
@@ -82,7 +87,23 @@ def dataplotmelt(grid_result):
 
 
 def model_optimization(X,y):
+    """
+    Parameters:
+    -----------
+    X : array-like of shape (n_samples, n_features)
+        The data to fit. Can be for example a list, or an array.
+
+    y : array-like of shape (n_samples, n_output) \
+        or (n_samples,).
+        Target relative to X for classification or regression;
     
+    Returns:
+    --------
+    best_model: estimator
+                Estimator that was chosen by the search, \ i.e. estimator which 
+                gave highest score (or smallest loss if specified) on the left 
+                out data.    
+    """
     scaler = StandardScaler()
     model = LogisticRegression(penalty='l2', max_iter=10000)
 
@@ -108,7 +129,28 @@ def model_optimization(X,y):
 
 
 # Test model
+
 def test_model(X_hd_train, X_hd_test, y_hd_train, best_model):
+
+    """
+    Test the final optimised model on test set
+
+    Parameters:
+    ----------
+    X_hd_train: 
+    X_hd_test: 
+    y_hd_train: 
+    best_model:
+
+
+    Returns:
+    --------
+    y_hd_pred:
+    y_hd_prob: 
+    pipe:
+
+    """
+    
     pipe = Pipeline([('scaler', StandardScaler()), ('clf', best_model)])
     pipe.fit(X_hd_train, y_hd_train)
     y_hd_pred = pipe.predict(X_hd_test)
@@ -277,7 +319,28 @@ def nested_ROC_plot(y_test_nested, y_pred_nested, ax=None):
 
 
 def montecarlo_crossvalidation(X,y, best_model, binary=True):
+    """
+    Performs a Montecarlo crossvalidation for binary classifaction.
+    
+    Parameters
+    ----------
+    X: array-like of shape (n_samples, n_features)
+        Training vector, where n_samples is the number of samples and n_features is the number of features
 
+    y: array-like of shape (n_samples,)
+        Target relative to X for classification or regression; None for unsupervised learning.
+
+    best_model: Estimator that was chosen by the search, i.e. estimator which gave highest score (or smallest loss if specified) on the left out data.
+
+    binary: If the prediction problem is binary. Default=True
+    
+    Return
+    ------
+     accuracies_mc: 
+     sensitivty_total: 
+     specificity_total:
+    
+    """
     accuracies_mc = []
     SPLITS = 100
     sensitivty_total = []
