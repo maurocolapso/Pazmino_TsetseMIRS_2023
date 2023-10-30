@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from matplotlib.ticker import FormatStrFormatter
 import seaborn as sn
 from tqdm import tqdm
 
@@ -18,11 +17,8 @@ from sklearn.model_selection import ShuffleSplit
 
 # models
 from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import SGDClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.tree import ExtraTreeClassifier
-from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 
 def baseline_accuracy(X, y):
