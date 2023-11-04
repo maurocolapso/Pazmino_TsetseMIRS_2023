@@ -19,7 +19,6 @@ Manuscript code
 
 ```
 tsetse_MIRS
-├── .DS_Store
 ├── README.md
 ├── data
 │   ├── .DS_Store
