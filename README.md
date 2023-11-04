@@ -2,4 +2,4 @@
 Manuscript data and code
 
 
-[Sex prediction](notebooks/notebooks/age_prediction_females_copy.ipynb)
+[Sex prediction](/notebooks/age_prediction_females_copy.ipynb)
