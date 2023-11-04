@@ -14,7 +14,8 @@ Manuscript code
 - [Age prediction using males with informative region](/notebooks/age_prediction_males_informative%20copy.ipynb)
 - [Sex prediction using informative region](/notebooks/sex_prediction_informative%20copy.ipynb)
 
-File structure
+
+## File structure
 
 ```
 tsetse_MIRS
