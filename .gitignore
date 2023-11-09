@@ -1,3 +1,6 @@
 .vscode/
+.data/
+.DS_Store
+
 DATAREADME.md
 testgore.py
