@@ -3,12 +3,16 @@
 Manuscript code
 
 ## Data
-- Individual files can be downloaded from elighten reporistory at:
+- Individual raw files can be downloaded from elighten reporistory at:
 - Files were assembled using BadBlood from
 
 ## Scripts/Notebooks
 
 - [Data preparation](/notebooks/1_data_preparation.py)
+- [Tissue comparison](/notebooks/2_tissue_comparison.py)
+- [Clustering](/notebooks/3_clustering.py)
+- [Permutation test](/notebooks/4_Permutation_test.ipynb)
+- [Bias test](/notebooks/5_Bias_testing.ipynb)
 - [Sex and age prediction using informative region](/notebooks/7_Prediction_restricted.ipynb)
 - [Sex prediction with all wavenumbers](/notebooks/6_Prediction_wholerange.ipynb)
 
@@ -20,22 +24,17 @@ Manuscript code
 tsetse_MIRS
 ├── README.md
 ├── data
-│   ├── .DS_Store
 │   ├── processed
 │   └── raw
 ├── notebooks
-│   ├── .DS_Store
-│   ├── Figure2.py
-│   ├── Figure3_clustering.py
-│   ├── age_prediction_females_copy.ipynb
-│   ├── age_prediction_females_informative copy.ipynb
-│   ├── age_prediction_males copy.ipynb
-│   ├── age_prediction_males_informative copy.ipynb
-│   ├── data_preparation.py
-│   ├── sex_prediction copy.ipynb
-│   └── sex_prediction_informative copy.ipynb
+│   ├── 1_data_preparation.py
+│   ├── 2_tissue_comparison.py
+│   ├── 3_clustering.py
+│   ├── 4_Permutation_test.ipynb
+│   ├── 5_Bias_testing.ipynb
+│   ├── 6_Prediction_wholerange.ipynb
+│   ├── 7_Prediction_restricted.ipynb
 ├── results
-│   ├── .DS_Store
 │   ├── plots
 │   └── tables
 └── src
