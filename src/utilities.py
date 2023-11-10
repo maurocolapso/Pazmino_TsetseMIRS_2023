@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sn
 from tqdm import tqdm
+import joblib
 
 # preprocessing
 from sklearn.model_selection import StratifiedShuffleSplit
@@ -20,6 +21,19 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
+
+def sample_split_report(y_hd_train, y_th_train, y_hd_test, y_th_test, file:str):
+    shape_data = {"train_head": y_hd_train.value_counts(),
+                "train_thorax": y_th_train.value_counts(),
+                "test_head": y_hd_test.value_counts(),
+                "test_thorax":y_th_test.value_counts()}
+
+    shape_data_df = pd.DataFrame(shape_data)
+
+    print(shape_data_df)
+    shape_data_df.to_excel("../results/tables/wholespectra_results/train_test_shape_"+ file+".xlsx")
+
+
 
 def baseline_accuracy(X, y):
     '''Function produce baseline accuracies of different machine learning models with standard scaler as preprocessig.
@@ -126,7 +140,13 @@ def model_optimization(X,y):
 
 # Test model
 
-def test_model(X_hd_train, X_hd_test, y_hd_train, best_model):
+def train_model(X_hd_train, y_hd_train ,best_model, name:str):
+    best_model.fit(X_hd_train, y_hd_train)
+    filename = '../results/models/trained_model_'+name+'.sav'
+    joblib.dump(best_model, filename)
+
+
+def test_model(X_hd_test, y_hd_test, loaded_model):
 
     """
     Test the final optimised model on test set
@@ -146,13 +166,12 @@ def test_model(X_hd_train, X_hd_test, y_hd_train, best_model):
     pipe:
 
     """
-    
-    pipe = Pipeline([('scaler', StandardScaler()), ('clf', best_model)])
-    pipe.fit(X_hd_train, y_hd_train)
-    y_hd_pred = pipe.predict(X_hd_test)
-    y_hd_prob = pipe.predict_proba(X_hd_test)
+    y_hd_pred = loaded_model.predict(X_hd_test)
+    y_hd_prob = loaded_model.predict_proba(X_hd_test)
+    acc = accuracy_score(y_hd_test, y_hd_pred)
+    print(f"Accuracy on test set using the head: {acc}")
 
-    return y_hd_pred, y_hd_prob, pipe
+    return y_hd_pred, y_hd_prob
 
 
 # nested cross validation
