@@ -8,7 +8,7 @@ Manuscript code
 
 ## Scripts/Notebooks
 
-- Data preparation(/notebooks/1_data_preparation.py)
+- [Data preparation](/notebooks/1_data_preparation.py)
 - [Sex and age prediction using informative region](/notebooks/7_Prediction_restricted.ipynb)
 - [Sex prediction with all wavenumbers](/notebooks/6_Prediction_wholerange.ipynb)
 
