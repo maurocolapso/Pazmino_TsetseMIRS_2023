@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
-colorpal = ["#332288", "#117733", "#44AA99"]
+colorpal = ["#999933", "#DDCC77", "#332288"]
 
 # Import data
 tsetse_data = pd.read_csv("./data/raw/TseTse_finaldatasetclean.csv")
@@ -66,52 +66,48 @@ X_pca = pca.fit_transform(tsetse_data_copy_onlywvns)
 # Plot
 
 
-# Plot
-
-
 plt.rcParams["font.size"] = 12
-# sn.set(font_scale=1.2)
 sn.set_style("ticks")
 sn.set_palette(sn.color_palette(colorpal))
 
-fig, (ax, ax2) = plt.subplots(1, 2, figsize=(9, 5), tight_layout=True)
+fig, (ax, ax2) = plt.subplots(1, 2, figsize=(7.5, 3.5), tight_layout=True)
 sn.scatterplot(
-    x=X_pca[:, 0],
-    y=X_pca[:, 1],
+    x=X_pca[:, 0], y=X_pca[:, 1],
     hue=tsetse_data_copy["Tissue"],
-    style=tsetse_data_copy["Tissue"],
     ax=ax,
-    legend=True,
+    legend=True
 )
 
-ax.legend(frameon=False)
+ax.legend(frameon=False,
+        loc='upper right',
+        bbox_to_anchor=(1.1, 1.1),)
 sn.despine(ax=ax)
 
 sn.lineplot(
     x=wavenumbers,
     y=np.mean(tsetse_females_head_copy.loc[:, "4000":"402"], axis=0) + 1.2,
-    color="#44AA99",
+    color="#DDCC77",
     ax=ax2,
     label="Head",
 )
 sn.lineplot(
     x=wavenumbers,
     y=np.mean(tsetse_females_thorax_copy.loc[:, "4000":"402"], axis=0) + 1,
-    color="#117733",
+    color="#332288",
     ax=ax2,
     label="Thorax",
 )
 sn.lineplot(
     x=wavenumbers,
     y=abdomen_x.iloc[3, :] + 0.8,
-    color="#332288",
+    color="#999933",
     ax=ax2,
     label="Abdomen",
 )
-sn.lineplot(x=wavenumbers, y=abdomen_x.iloc[4, :] + 0.3, color="#332288", ax=ax2)
-sn.lineplot(x=wavenumbers, y=abdomen_x.iloc[5, :], color="#332288", ax=ax2)
+sn.lineplot(x=wavenumbers, y=abdomen_x.iloc[4, :] + 0.3, color="#999933", ax=ax2)
+sn.lineplot(x=wavenumbers, y=abdomen_x.iloc[5, :], color="#999933", ax=ax2)
 
-# ax2.legend(ncol=3, bbox_to_anchor=(0.05, 1, 1, 0.1), loc="center", frameon=False)
+#ax2.legend(ncol=3, bbox_to_anchor=(0.05, 1, 1, 0.1), loc="center", frameon=False)
 ax2.get_legend().remove()
 
 sn.despine(ax=ax2)
@@ -130,11 +126,11 @@ for a, l in zip(axes, labeles):
     a.set_title(l, y=1, loc="left", fontsize=12, fontweight="bold")
 
 
-fig.text(x=1, y=0.89, s="Head", color="#44AA99", fontweight="bold")
-fig.text(x=1, y=0.79, s="Thorax", color="#117733", fontweight="bold")
-fig.text(x=1, y=0.65, s="Abdomen #1", color="#332288", fontweight="bold")
-fig.text(x=1, y=0.44, s="Abdomen #2", color="#332288", fontweight="bold")
-fig.text(x=1, y=0.21, s="Abdomen #3", color="#332288", fontweight="bold")
+fig.text(x=1,y=0.85,s="Head",color='#DDCC77',fontweight='bold')
+fig.text(x=1,y=0.75,s="Thorax",color='#332288',fontweight='bold')
+fig.text(x=1,y=0.64,s="Abdomen #1",color='#999933', fontweight='bold')
+fig.text(x=1,y=0.45,s="Abdomen #2",color='#999933', fontweight='bold')
+fig.text(x=1,y=0.26,s="Abdomen #3",color='#999933', fontweight='bold')
 
 
 fig.savefig("./results/plots/Fig2.png", dpi=300, bbox_inches="tight")

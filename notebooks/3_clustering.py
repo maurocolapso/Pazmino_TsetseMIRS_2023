@@ -145,10 +145,12 @@ rc={'font.size': 12,
 sn.set_style("ticks")
 sn.set_context('notebook', rc=rc)
 
-colorpal = ["#332288", "#117733", "#44AA99"]
-colorpal2 = ["#117733", "#44AA99"]
+colorpal = ["#999933", "#DDCC77", "#332288"]
+colorpal2 = ["#DDCC77", "#332288"]
 
-colorsex = ["#005AB5", "#DC3220"]
+
+
+colorsex = ["#88CCEE", "#882255"]
 markpal = ["X", "o", "s"]
 sn.set_palette(sn.color_palette(colorpal))
 
@@ -163,10 +165,12 @@ sn.scatterplot(
     y=embedding_head_male[:, 1],
     hue=descriptorsDF_head_males["Age"],
     hue_order=["5w", "7w"],
-    alpha=0.8,
+    alpha=1,
     palette=colorpal2,
     legend=True,
     ax=ax2,
+    linewidth=1,
+    edgecolor='k'
 )
 
 sn.scatterplot(
@@ -175,9 +179,11 @@ sn.scatterplot(
     hue=descriptorsDF_thorax_males["Age"],
     hue_order=["5w", "7w"],
     palette=colorpal2,
-    alpha=0.8,
+    alpha=1,
     legend=True,
     ax=ax5,
+    linewidth=1,
+    edgecolor='k'
 )
 
 # FEMALES AGE
@@ -185,10 +191,12 @@ sn.scatterplot(
 sn.scatterplot(
     x=embedding_head[:, 0],
     y=embedding_head[:, 1],
-    alpha=0.8,
+    alpha=1,
     hue=descriptorsDF_head["Age"],
     ax=ax3,
     legend=True,
+    linewidth=1,
+    edgecolor='k'
 )
 
 
@@ -201,6 +209,8 @@ sn.scatterplot(
     markers=markpal,
     legend=True,
     ax=ax6,
+    linewidth=1,
+    edgecolor='k'
 )
 
 
@@ -211,8 +221,10 @@ sn.scatterplot(
     y=embedding_head_sex[:, 1],
     hue=descriptorsDF_sameage[descriptorsDF_sameage["Tissue"] == "Head"]["Sex"],
     palette=colorsex,
-    alpha=0.8,
+    alpha=1,
     ax=ax,
+    linewidth=1,
+    edgecolor='k'
 )
 
 
@@ -220,10 +232,12 @@ sn.scatterplot(
     x=embedding_thorax_sex[:, 0],
     y=embedding_thorax_sex[:, 1],
     hue=descriptorsDF_sameage[descriptorsDF_sameage["Tissue"] == "Thorax"]["Sex"],
-    alpha=0.8,
+    alpha=1,
     palette=colorsex,
     legend=True,
     ax=ax4,
+    linewidth=1,
+    edgecolor='k'
 )
 
 
@@ -284,4 +298,4 @@ axes = fig.get_axes()
 for a, l in zip(axes, labeles):
     a.set_title(l, loc="left", fontsize=12, fontweight="bold")
 
-plt.savefig("./results/plots/Fig3.tiff", dpi=300, bbox_inches="tight")
+plt.savefig("./results/plots/Fig3.png", dpi=300, bbox_inches="tight")

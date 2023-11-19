@@ -357,7 +357,7 @@ def montecarlo_crossvalidation(X,y, best_model, binary=True):
     
     """
     accuracies_mc = []
-    SPLITS = 100
+    SPLITS = 500
     sensitivty_total = []
     specificity_total = []
 
@@ -447,3 +447,75 @@ def gridsearch_bias(X_thorax_part1, y_thorax):
     mean_accuracies_copy['param_clf'] =  mean_accuracies_copy['param_clf'].str.replace('RandomForestClassifier(random_state=123)', 'RF', regex=False)
 
     return mean_accuracies_copy
+
+
+
+
+import matplotlib.path as mpath
+import matplotlib.patches as mpatches
+
+
+def add_label_band(ax, top, bottom, label, *, spine_pos=-0.05, tip_pos=-0.02):
+    """
+    Helper function to add bracket around y-tick labels.
+
+    Parameters
+    ----------
+    ax : matplotlib.Axes
+        The axes to add the bracket to
+
+    top, bottom : floats
+        The positions in *data* space to bracket on the y-axis
+
+    label : str
+        The label to add to the bracket
+
+    spine_pos, tip_pos : float, optional
+        The position in *axes fraction* of the spine and tips of the bracket.
+        These will typically be negative
+
+    Returns
+    -------
+    bracket : matplotlib.patches.PathPatch
+        The "bracket" Aritst.  Modify this Artist to change the color etc of
+        the bracket from the defaults.
+
+    txt : matplotlib.text.Text
+        The label Artist.  Modify this to change the color etc of the label
+        from the defaults.
+
+    """
+    # grab the yaxis blended transform
+    transform = ax.get_yaxis_transform()
+
+    # add the bracket
+    bracket = mpatches.PathPatch(
+        mpath.Path(
+            [
+                [tip_pos, top],
+                [spine_pos, top],
+                [spine_pos, bottom],
+                [tip_pos, bottom],
+            ]
+        ),
+        transform=transform,
+        clip_on=False,
+        facecolor="none",
+        edgecolor="k",
+        linewidth=2,
+    )
+    ax.add_artist(bracket)
+
+    # add the label
+    txt = ax.text(
+        spine_pos,
+        (top + bottom) / 2,
+        label,
+        ha="right",
+        va="center",
+        rotation="vertical",
+        clip_on=False,
+        transform=transform,
+    )
+
+    return bracket, txt
