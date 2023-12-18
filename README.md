@@ -3,8 +3,8 @@
 Manuscript code
 
 ## Data
-- Individual raw files can be downloaded from elighten reporistory at:
-- Files were assembled using BadBlood from
+- Individual raw files and assembled file can be downloaded from elighten reporistory at:
+- Files were assembled using [BadBlood 1.1](https://github.com/magonji/MIMI-project).
 
 ## Scripts/Notebooks
 
@@ -40,3 +40,10 @@ tsetse_MIRS
 └── src
     └── utilities.py
 ```
+
+## Reproducing the analysis 
+
+1. Download individual raw files
+2. Create the assembled file using BadBlood 1.1 script. 
+3. Create the final assembled file called 'TseTse_processed.csv" using [1_data_preparation.py](/notebooks/1_data_preparation.py) script.
+

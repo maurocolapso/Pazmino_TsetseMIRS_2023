@@ -30,7 +30,7 @@ Was data derived from another source? No
 Filelist: 
 ```
 Data
-├── ATR_data
+├── ATR_RAW_DATA
 │   ├── PLATE1_ALL
 │   ├── PLATE2_ALL
 │   ├── PLATE3_ALL
