@@ -21,6 +21,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.svm import SVC
+from transformers import SavitzkyGolay
 
 def sample_split_report(y_hd_train, y_th_train, y_hd_test, y_th_test, file:str):
     shape_data = {"train_head": y_hd_train.value_counts(),
@@ -57,7 +58,8 @@ def baseline_accuracy(X, y):
     sss = StratifiedShuffleSplit(n_splits=10, test_size=0.2, random_state=7)
 
     # Set our pipeline: scaling and the model
-    pipe = Pipeline([('scaler', StandardScaler()), ('clf', LogisticRegression(max_iter=1000))])
+    #pipe = Pipeline([('scaler', StandardScaler()), ('clf', LogisticRegression(max_iter=1000))])
+    pipe = Pipeline([('scaler', SavitzkyGolay()), ('clf', LogisticRegression(max_iter=1000))])
 
 # Set the models we want to test
     param_grid = [{"clf": [LogisticRegression(max_iter=1000)]},
@@ -114,13 +116,25 @@ def model_optimization(X,y):
                 gave highest score (or smallest loss if specified) on the left 
                 out data.    
     """
-    scaler = StandardScaler()
-    model = LogisticRegression(penalty='l2', max_iter=10000)
+    #scaler = StandardScaler()
+    scaler = SavitzkyGolay()
+    #model = LogisticRegression(penalty='l2', max_iter=10000)
+    model = RandomForestClassifier(random_state=123)
 
     pipe = Pipeline(steps=[("scaler", scaler), ("model", model)])
 
+    param_grid = {
+    'model__bootstrap': [True],
+    'model__max_depth': [80, 90, 100, 110],
+    'model__max_features': [2, 3],
+    'model__min_samples_leaf': [3, 4, 5],
+    'model__min_samples_split': [8, 10, 12],
+    'model__n_estimators': [100, 200, 300, 1000]
 
-    param_grid = {'model__C': [100, 10, 1.0, 0.1, 0.01], 'model__solver': ["newton-cg", 'lbfgs', 'liblinear'], 'model__penalty':['l2']}
+    }
+
+
+    #param_grid = {'model__C': [100, 10, 1.0, 0.1, 0.01], 'model__solver': ["newton-cg", 'lbfgs', 'liblinear'], 'model__penalty':['l2']}
     
     cv_grid = StratifiedKFold(n_splits=10, shuffle=True, random_state=123)
 
@@ -166,12 +180,13 @@ def test_model(X_hd_test, y_hd_test, loaded_model):
     pipe:
 
     """
+    print(loaded_model)
     y_hd_pred = loaded_model.predict(X_hd_test)
-    y_hd_prob = loaded_model.predict_proba(X_hd_test)
+    #y_hd_prob = loaded_model.predict_proba(X_hd_test)
     acc = accuracy_score(y_hd_test, y_hd_pred)
     print(f"Accuracy on test set using the head: {acc}")
 
-    return y_hd_pred, y_hd_prob
+    return y_hd_pred
 
 
 # nested cross validation
@@ -403,15 +418,16 @@ def variable_importance_df(wavenumbers, pipeline_best):
     """
 
     variable_importance = pd.DataFrame({"Wavenumbers": wavenumbers,
-    'Coefficients': pipeline_best['model'].coef_[0].T})
+    'Feature importance': pipeline_best['model'].feature_importances_})
 
 
-    variable_importance_sort_positive = variable_importance.sort_values(by=["Coefficients"], ascending=False).head(10)
-    variable_importance_sort_negative = variable_importance.sort_values(by=["Coefficients"], ascending=True).head(10)
+    variable_importance_sort_positive = variable_importance.sort_values(by=["Feature importance"], ascending=False).head(10)
+    #variable_importance_sort_negative = variable_importance.sort_values(by=["Coefficients"], ascending=True).head(10)
 
-    final_sortlist = [variable_importance_sort_positive,variable_importance_sort_negative]
-    final_sort = pd.concat(final_sortlist)
-    return final_sort
+    #final_sortlist = [variable_importance_sort_positive,variable_importance_sort_negative]
+    #final_sort = pd.concat(final_sortlist)
+    variable_importance_sort_positive['Wavenumbers'] = variable_importance_sort_positive['Wavenumbers'].astype('category')
+    return variable_importance_sort_positive
 
 
 def gridsearch_bias(X_thorax_part1, y_thorax):
@@ -429,7 +445,12 @@ def gridsearch_bias(X_thorax_part1, y_thorax):
     param3 = {}
     param3['clf'] = [clf3]
 
-    pipe = Pipeline([('scaler', StandardScaler()), ('clf', clf1)])
+    pipe = Pipeline([("clf", clf1)])
+
+    #pipe = Pipeline([('scaler', SavitzkyGolay()), ('clf', clf1)])
+
+    #pipe = Pipeline([('scaler', StandardScaler()), ('clf', clf1)])
+
     params = [param1, param2, param3]
     cv = StratifiedShuffleSplit(n_splits=10, random_state=7, test_size=0.2)
 
@@ -445,6 +466,8 @@ def gridsearch_bias(X_thorax_part1, y_thorax):
     mean_accuracies_copy['param_clf'] =  mean_accuracies_copy['param_clf'].str.replace('LogisticRegression(max_iter=1000, random_state=123)',repl='LR', regex=False)
     mean_accuracies_copy['param_clf'] =  mean_accuracies_copy['param_clf'].str.replace("SVC(kernel='linear', random_state=123)", 'SVM',regex=False)
     mean_accuracies_copy['param_clf'] =  mean_accuracies_copy['param_clf'].str.replace('RandomForestClassifier(random_state=123)', 'RF', regex=False)
+
+    
 
     return mean_accuracies_copy
 

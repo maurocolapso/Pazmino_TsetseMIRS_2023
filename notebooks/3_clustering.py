@@ -297,5 +297,11 @@ labeles = ["A", "B", "C", "D", "E", "F"]
 axes = fig.get_axes()
 for a, l in zip(axes, labeles):
     a.set_title(l, loc="left", fontsize=12, fontweight="bold")
+    a.tick_params(left=False, 
+                  labelleft=False,
+                  labelbottom=False,
+                  bottom=False)
+
+sn.despine()
 
 plt.savefig("./results/plots/Fig3.png", dpi=300, bbox_inches="tight")
