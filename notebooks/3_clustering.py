@@ -1,4 +1,4 @@
-"""The script reproduces Fig 3 of the manuscript"""
+"""The script reproduces Fig 6 of the manuscript"""
 
 # import packages
 import pandas as pd
@@ -145,8 +145,8 @@ rc={'font.size': 12,
 sn.set_style("ticks")
 sn.set_context('notebook', rc=rc)
 
-colorpal = ["#999933", "#DDCC77", "#332288"]
-colorpal2 = ["#DDCC77", "#332288"]
+colorpal = ["#DC267F", "#785EF0", "#FFB000"]
+colorpal2 = ["#785EF0", "#FFB000"]
 
 
 
@@ -303,5 +303,4 @@ for a, l in zip(axes, labeles):
                   bottom=False)
 
 sn.despine()
-
-plt.savefig("./results/plots/Fig3.png", dpi=300, bbox_inches="tight")
+plt.savefig("./results/plots/Fig6.tiff", dpi=350, bbox_inches="tight")

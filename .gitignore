@@ -1,6 +1,7 @@
 .vscode/
 data/
 .DS_Store
+.tsetse_mirs
 
 DATAREADME.md
 testgore2.py

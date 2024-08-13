@@ -58,6 +58,42 @@ def baseline_accuracy(X, y):
     sss = StratifiedShuffleSplit(n_splits=10, test_size=0.2, random_state=7)
 
     # Set our pipeline: scaling and the model
+    pipe = Pipeline([('scaler', StandardScaler()), ('clf', LogisticRegression(max_iter=1000))])
+    #pipe = Pipeline([('scaler', SavitzkyGolay()), ('clf', LogisticRegression(max_iter=1000))])
+
+# Set the models we want to test
+    param_grid = [{"clf": [LogisticRegression(max_iter=1000)]},
+                {"clf": [RandomForestClassifier(random_state=seed)]},
+                {"clf": [SVC()]},
+                {"clf": [DecisionTreeClassifier()]}]
+    
+    grid_search = GridSearchCV(pipe, param_grid, cv=sss, verbose=1,n_jobs=-1)
+    grid_search.fit(X, y)
+
+    return grid_search.cv_results_
+
+def baseline_accuracy_derivative(X, y):
+    '''Function produce baseline accuracies of different machine learning models with standard scaler as preprocessig.
+    
+    Parameters:
+    X : array-like of shape (n_samples, n_features)
+        The data to fit. Can be for example a list, or an array.
+
+    y : array-like of shape (n_samples,). 
+        The target variable to try to predict in the case of
+        supervised learning.
+    
+    Returns
+    -------
+    cv_results: dict of numpy (masked) ndarrays
+                    A dict with keys as column headers and values as columns, that can be imported into a pandas DataFrame.
+    '''
+    seed=123
+
+    # Set our crossvalidation method
+    sss = StratifiedShuffleSplit(n_splits=10, test_size=0.2, random_state=7)
+
+    # Set our pipeline: scaling and the model
     #pipe = Pipeline([('scaler', StandardScaler()), ('clf', LogisticRegression(max_iter=1000))])
     pipe = Pipeline([('scaler', SavitzkyGolay()), ('clf', LogisticRegression(max_iter=1000))])
 
@@ -116,6 +152,61 @@ def model_optimization(X,y):
                 gave highest score (or smallest loss if specified) on the left 
                 out data.    
     """
+    scaler = StandardScaler()
+    #scaler = SavitzkyGolay()
+    model = LogisticRegression(penalty='l2', max_iter=10000)
+    #model = RandomForestClassifier(random_state=123)
+
+    pipe = Pipeline(steps=[("scaler", scaler), ("model", model)])
+
+    # param_grid = {
+    # 'model__bootstrap': [True],
+    # 'model__max_depth': [80, 90, 100, 110],
+    # 'model__max_features': [2, 3],
+    # 'model__min_samples_leaf': [3, 4, 5],
+    # 'model__min_samples_split': [8, 10, 12],
+    # 'model__n_estimators': [100, 200, 300, 1000]
+
+    # }
+
+
+    param_grid = {'model__C': [100, 10, 1.0, 0.1, 0.01], 'model__solver': ["newton-cg", 'lbfgs', 'liblinear'], 'model__penalty':['l2']}
+    
+    cv_grid = StratifiedKFold(n_splits=10, shuffle=True, random_state=123)
+
+    # define search
+    search = GridSearchCV(pipe, param_grid, scoring='accuracy', cv=cv_grid, refit=True)
+
+    # execute search
+    result = search.fit(X, y)
+        
+    # get the best performing model fit on the whole training set
+    best_model = result.best_estimator_
+
+    print(f'Best model parameters{result.best_params_}')
+
+    return best_model
+
+
+
+def model_optimization_rf(X,y):
+    """
+    Parameters:
+    -----------
+    X : array-like of shape (n_samples, n_features)
+        The data to fit. Can be for example a list, or an array.
+
+    y : array-like of shape (n_samples, n_output) \
+        or (n_samples,).
+        Target relative to X for classification or regression;
+    
+    Returns:
+    --------
+    best_model: estimator
+                Estimator that was chosen by the search, \ i.e. estimator which 
+                gave highest score (or smallest loss if specified) on the left 
+                out data.    
+    """
     #scaler = StandardScaler()
     scaler = SavitzkyGolay()
     #model = LogisticRegression(penalty='l2', max_iter=10000)
@@ -150,7 +241,6 @@ def model_optimization(X,y):
     print(f'Best model parameters{result.best_params_}')
 
     return best_model
-
 
 # Test model
 
@@ -417,17 +507,49 @@ def variable_importance_df(wavenumbers, pipeline_best):
     final_sort: dataframe
     """
 
+    #variable_importance = pd.DataFrame({"Wavenumbers": wavenumbers,
+    #'Feature importance': pipeline_best['model'].feature_importances_})
+
+    variable_importance = pd.DataFrame({"Wavenumbers": wavenumbers,
+    'Feature importance': pipeline_best['model'].coef_[0]})
+
+    variable_importance_sort_positive = variable_importance.sort_values(by=["Feature importance"], ascending=False).head(10)
+    variable_importance_sort_negative = variable_importance.sort_values(by=["Feature importance"], ascending=True).head(10)
+
+    final_sortlist = [variable_importance_sort_positive,variable_importance_sort_negative]
+    final_sort = pd.concat(final_sortlist)
+    #variable_importance_sort_positive['Wavenumbers'] = variable_importance_sort_positive['Wavenumbers'].astype('category')
+    #return variable_importance_sort_positive
+    return final_sort
+
+def variable_importance_df_derv(wavenumbers, pipeline_best):
+    """Function returns a dataframe with the 10 highest coefficients (positive and negative)
+    Paramaters:
+    -----------
+    wvenumbers: array
+    coefficients: pipeline
+
+    Return
+    --------
+    final_sort: dataframe
+    """
+
     variable_importance = pd.DataFrame({"Wavenumbers": wavenumbers,
     'Feature importance': pipeline_best['model'].feature_importances_})
 
+    #variable_importance = pd.DataFrame({"Wavenumbers": wavenumbers,
+    #'Feature importance': pipeline_best['model'].coef_[0]})
 
     variable_importance_sort_positive = variable_importance.sort_values(by=["Feature importance"], ascending=False).head(10)
-    #variable_importance_sort_negative = variable_importance.sort_values(by=["Coefficients"], ascending=True).head(10)
+    variable_importance_sort_negative = variable_importance.sort_values(by=["Feature importance"], ascending=True).head(10)
 
-    #final_sortlist = [variable_importance_sort_positive,variable_importance_sort_negative]
-    #final_sort = pd.concat(final_sortlist)
-    variable_importance_sort_positive['Wavenumbers'] = variable_importance_sort_positive['Wavenumbers'].astype('category')
-    return variable_importance_sort_positive
+    final_sortlist = [variable_importance_sort_positive,variable_importance_sort_negative]
+    final_sort = pd.concat(final_sortlist)
+    #variable_importance_sort_positive['Wavenumbers'] = variable_importance_sort_positive['Wavenumbers'].astype('category')
+    #return variable_importance_sort_positive
+    return final_sort
+
+
 
 
 def gridsearch_bias(X_thorax_part1, y_thorax):

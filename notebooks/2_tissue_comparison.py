@@ -1,3 +1,4 @@
+"""Script recreates figure 4 of the manuscript"""
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 import seaborn as sn
@@ -254,4 +255,4 @@ for i in [ax1, ax2, ax3]:
 sn.move_legend(ax0, "upper right", bbox_to_anchor=(1.25, 1.45))
 
 
-fig.savefig("./results/plots/Fig2.png", dpi=300, bbox_inches="tight")
+fig.savefig("./results/plots/Fig4.tiff", dpi=350, bbox_inches="tight")
