@@ -1,4 +1,4 @@
-# Mid-infrared spectroscopy and machine learning for vector surveillance in tsetse (Glossina spp.)
+# Advancing age grading techniques for Glossina morsitans morsitans, vectors of African trypanosomiasis, through mid-infrared spectroscopy and machine learning
 
 Manuscript code
 
