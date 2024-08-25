@@ -3,7 +3,7 @@
 Manuscript code
 
 ## Data
-- Individual raw files and assembled file can be downloaded from elighten reporistory at:
+- Individual raw files and assembled file can be downloaded from the Enlighten reporistory at: https://researchdata.gla.ac.uk/1564/
 - Files were assembled using [BadBlood 1.1](https://github.com/magonji/MIMI-project).
 
 ## Scripts/Notebooks
@@ -13,8 +13,10 @@ Manuscript code
 - [Clustering](/notebooks/3_clustering.py)
 - [Permutation test](/notebooks/4_Permutation_test.ipynb)
 - [Bias test](/notebooks/5_Bias_testing.ipynb)
-- [Sex and age prediction using informative region](/notebooks/7_Prediction_restricted.ipynb)
 - [Sex prediction with all wavenumbers](/notebooks/6_Prediction_wholerange.ipynb)
+- [Sex and age prediction using informative region](/notebooks/7_Prediction_restricted.ipynb)
+- [Sample dessication times (figure)](/notebooks/Dessicationtimes.py)
+- [Spectra comparison (figure)](/notebooks/spectra_comparison.py)
 
 
 
