@@ -36,6 +36,9 @@ tsetse_MIRS
 │   ├── 5_Bias_testing.ipynb
 │   ├── 6_Prediction_wholerange.ipynb
 │   ├── 7_Prediction_restricted.ipynb
+│   ├── 8_Prediction_restricted_second_derivative.ipynb
+│   ├── Dessicationtimes.py
+│   ├── spectra_comparison.py
 ├── results
 │   ├── plots
 │   └── tables
